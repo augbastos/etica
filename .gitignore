@@ -1,0 +1,24 @@
+# Fresh public repo: PIPELINE + a Part I sample only.
+# The full adapted prose (Parts II–V, all languages) and compiled PDF/EPUB are the
+# paid product (KDP) and MUST NEVER enter this repo. Hard deny below is belt-and-suspenders
+# on top of only-safe-files-were-copied.
+
+# --- HARD DENY: paid product, never track ---
+src/book-*.html
+src/parts/parte-2.html
+src/parts/parte-3.html
+src/parts/parte-4.html
+src/parts/parte-5.html
+src/parts/posface.html
+build/
+i18n/
+fontes/*.pdf
+*.epub
+*.mobi
+*.docx
+
+# --- junk ---
+__pycache__/
+*.pyc
+.impeccable/
+.DS_Store

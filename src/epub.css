@@ -1,0 +1,126 @@
+/* ============================================================
+   ÉTICA — edição EPUB reflowável (Kindle / celular)
+   Sem paginação fixa: o texto se ajusta à tela.
+   E-readers costumam forçar fonte/fundo — o design sobrevive
+   pela estrutura (filetes, selos, blocos) mais que pela cor.
+   ============================================================ */
+
+:root {
+  --ink: #16263d;
+  --gold: #a9853f;
+  --paper: #faf6ec;
+  --text: #20201d;
+  --muted: #6c6555;
+  --rule: #d8cdb4;
+}
+
+html, body { margin: 0; padding: 0; background: #faf6ec; color: #20201d; }
+body {
+  font-family: Georgia, 'Times New Roman', serif;
+  line-height: 1.55;
+  padding: 0 0.4em;
+}
+
+h1, h2, h3 { font-family: Georgia, serif; color: #16263d; line-height: 1.18; page-break-after: avoid; }
+p { margin: 0 0 0.2em; text-align: justify; text-indent: 1.3em; orphans: 2; widows: 2; }
+p.lead, p.lead\ dropcap, .lead { text-indent: 0; }
+em, i { font-style: italic; }
+strong, b { font-weight: bold; }
+
+/* abertura de cada seção/parte */
+.chapter { page-break-before: always; }
+.chapter-num {
+  font-size: 0.72em; letter-spacing: 0.28em; text-transform: uppercase;
+  color: #a9853f; margin: 1.2em 0 0.3em;
+}
+.chapter h2 {
+  font-size: 1.85em; margin: 0.1em 0 0.7em; padding-bottom: 0.4em;
+  border-bottom: 1px solid #d8cdb4;
+}
+.chapter h2 .tick { display: none; }
+h3 { font-size: 1.25em; margin: 1.3em 0 0.4em; }
+h3 .num { color: #a9853f; margin-right: 0.35em; }
+
+/* capitular */
+.dropcap::first-letter {
+  font-size: 3.1em; line-height: 0.8; float: left;
+  padding: 0.02em 0.08em 0 0; color: #16263d; font-weight: bold;
+}
+
+/* divisor geométrico */
+.geo-divider { display: block; width: 110px; max-width: 40%; margin: 1.5em auto 1.1em; }
+
+/* proposição em destaque (com selo) */
+.prop {
+  margin: 1.1em 0; padding: 0.7em 0.9em; background: #fffdf7;
+  border-left: 4px solid #a9853f; page-break-inside: avoid;
+}
+.prop .seal {
+  display: block; font-size: 0.66em; letter-spacing: 0.18em;
+  text-transform: uppercase; color: #a9853f; margin-bottom: 0.4em;
+}
+.prop .text { font-size: 1.15em; font-weight: bold; color: #16263d; text-indent: 0; margin: 0; }
+.prop.climax { background: #16263d; border-left-color: #a9853f; }
+.prop.climax .text { color: #faf6ec; }
+.prop.climax .seal { color: #c8a868; }
+
+/* demonstração */
+.demo { margin: 0.6em 0 0.9em; padding-left: 0.9em; border-left: 1px solid #d8cdb4; }
+.demo .tag {
+  font-size: 0.66em; letter-spacing: 0.18em; text-transform: uppercase;
+  color: #a9853f; margin-right: 0.5em;
+}
+.demo p { font-size: 0.95em; text-indent: 0; color: #34322c; }
+.qed { color: #a9853f; font-weight: bold; }
+
+/* caixa didática */
+.gloss {
+  margin: 1em 0; padding: 0.7em 0.9em; background: #f3ecdb;
+  border: 1px solid #d8cdb4; page-break-inside: avoid;
+}
+.gloss .tag {
+  display: block; font-size: 0.68em; letter-spacing: 0.16em;
+  text-transform: uppercase; color: #a9853f; margin-bottom: 0.3em;
+}
+.gloss p { text-indent: 0; font-size: 0.95em; margin: 0; }
+
+/* figura */
+figure { margin: 1.3em auto; text-align: center; page-break-inside: avoid; }
+figure img { max-width: 100%; height: auto; }
+figcaption { font-size: 0.8em; color: #6c6555; margin-top: 0.5em; font-style: italic; }
+
+/* citação */
+blockquote {
+  margin: 1.1em 1em; padding-left: 0.9em; border-left: 3px solid #d8cdb4;
+  font-style: italic; color: #6c6555;
+}
+
+/* glossário */
+dl.glossary dt { font-weight: bold; color: #16263d; margin-top: 0.8em; }
+dl.glossary dd { margin: 0.15em 0 0; text-indent: 0; }
+.refnote { font-size: 0.85em; color: #6c6555; font-style: italic; margin-top: 1.6em; }
+
+/* abertura de PARTE (bloco reflowável, não página inteira fixa) */
+.epub-opener {
+  page-break-before: always; page-break-after: avoid;
+  background: #16263d; color: #faf6ec; text-align: center;
+  padding: 2.4em 1.2em; margin: 0 -0.4em 0.4em;
+}
+.epub-opener .kick {
+  font-size: 0.72em; letter-spacing: 0.4em; text-transform: uppercase;
+  color: #c8a868; margin-bottom: 1em;
+}
+.epub-opener h2 {
+  color: #faf6ec; border: 0; font-size: 2.1em; margin: 0.2em 0;
+}
+.epub-opener img { width: 120px; max-width: 40%; margin: 1em auto; display: block; }
+.epub-opener .epigraph { font-style: italic; color: #e7dcc3; font-size: 1.05em; margin: 1em auto 0; }
+.epub-opener .epigraph .ref { display: block; font-style: normal; font-size: 0.7em; letter-spacing: 0.2em; color: #c8a868; margin-top: 0.7em; text-transform: uppercase; }
+
+/* folha de rosto */
+.titlepage { text-align: center; page-break-after: always; padding-top: 3em; }
+.titlepage img.mark { width: 70px; margin: 0 auto 1.5em; display: block; }
+.titlepage h1 { font-size: 3.4em; margin: 0; }
+.titlepage .sub { font-style: italic; color: #6c6555; font-size: 1.05em; margin: 1em 1em 0; }
+.titlepage .author { letter-spacing: 0.25em; text-transform: uppercase; margin-top: 2.2em; font-size: 0.85em; }
+.titlepage .edition { letter-spacing: 0.25em; text-transform: uppercase; color: #a9853f; font-size: 0.72em; margin-top: 0.5em; }

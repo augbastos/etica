@@ -1,0 +1,258 @@
+/* ============================================================
+   ÉTICA — Spinoza para o Século XXI
+   Sistema de design editorial · miolo 6×9"
+   Render: HTML + Paged.js → Chromium headless → PDF
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --ink:        #16263d;   /* azul-prússia profundo  */
+  --gold:       #a9853f;   /* dourado sóbrio         */
+  --gold-soft:  #c8a868;
+  --paper:      #faf6ec;   /* off-white quente       */
+  --text:       #20201d;   /* quase-preto tipográfico*/
+  --muted:      #6c6555;
+  --rule:       #d8cdb4;
+  --serif:      'EB Garamond', Georgia, serif;
+  --display:    'Cormorant Garamond', 'EB Garamond', serif;
+  --label:      'Inter', system-ui, sans-serif;
+}
+
+/* ---------- PÁGINA ---------- */
+@page {
+  size: 6in 9in;
+  margin: 19mm 17mm 20mm 17mm;
+  background: var(--paper);
+
+  @bottom-center {
+    content: counter(page);
+    font-family: var(--serif);
+    font-size: 9.5pt;
+    color: var(--muted);
+    margin-top: 4mm;
+  }
+  @top-center {
+    content: string(runhead);
+    font-family: var(--label);
+    font-size: 7.5pt;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5mm;
+  }
+}
+@page :first { @top-center { content: none; } @bottom-center { content: none; } }
+
+/* páginas de abertura de parte — sem cabeço, fundo tintado */
+@page part {
+  margin: 0;
+  @top-center { content: none; }
+  @bottom-center { content: none; }
+}
+
+* { box-sizing: border-box; }
+
+html { font-family: var(--serif); color: var(--text); }
+body {
+  margin: 0;
+  background: var(--paper);
+  font-size: 11pt;
+  line-height: 1.52;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- TIPOGRAFIA DE CORPO ---------- */
+body { font-size: 11.3pt; line-height: 1.5; }
+p { margin: 0; text-align: justify; hyphens: auto; orphans: 2; widows: 2; }
+p + p { text-indent: 1.4em; margin-top: 0; }
+.lead { text-indent: 0; }
+
+/* capitular */
+.dropcap::first-letter {
+  font-family: var(--display);
+  font-weight: 600;
+  float: left;
+  font-size: 4.1em;
+  line-height: 0.78;
+  padding: 0.05em 0.09em 0 0;
+  color: var(--ink);
+}
+
+em, i { font-style: italic; }
+strong { font-weight: 600; }
+
+/* ---------- ABERTURA DE PARTE ---------- */
+.part-opener {
+  page: part;
+  break-before: page;
+  position: relative;
+  height: 9in; width: 6in;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex; flex-direction: column;
+  justify-content: center; align-items: center;
+  text-align: center;
+  overflow: hidden;
+}
+.part-opener .art { position: absolute; inset: 0; opacity: 0.9; }
+.part-opener .inner { position: relative; z-index: 2; padding: 0 16mm; }
+.part-opener .part-kicker {
+  font-family: var(--label);
+  font-size: 9pt; letter-spacing: 0.42em; text-transform: uppercase;
+  color: var(--gold-soft); margin-bottom: 10mm;
+}
+.part-opener h1 {
+  font-family: var(--display);
+  font-weight: 500; font-size: 34pt; line-height: 1.05;
+  margin: 0 0 8mm; color: var(--paper);
+}
+.part-opener .epigraph {
+  font-family: var(--display); font-style: italic;
+  font-size: 13pt; line-height: 1.5; color: #e7dcc3;
+  max-width: 78%; margin: 0 auto;
+}
+.part-opener .rule-gold {
+  width: 46px; height: 2px; background: var(--gold);
+  margin: 9mm auto; border: 0;
+}
+
+/* ---------- CABEÇALHOS DE CAPÍTULO ---------- */
+.chapter { break-before: page; }
+.chapter h2 {
+  string-set: runhead content();
+  font-family: var(--display);
+  font-weight: 600; font-size: 23pt; line-height: 1.1;
+  color: var(--ink);
+  margin: 6mm 0 2mm; text-align: left;
+  padding-bottom: 3mm;
+  position: relative;
+}
+/* régua geométrica sob o título: filete + nó (precisão matemática) */
+.chapter h2::after {
+  content: ""; position: absolute; left: 0; bottom: 0;
+  width: 100%; height: 1px; background: var(--rule);
+}
+.chapter h2 .tick {
+  position: absolute; left: 0; bottom: -2.5px;
+  width: 5px; height: 5px; background: var(--gold);
+  transform: rotate(45deg);
+}
+.chapter > .chapter-num {
+  font-family: var(--label);
+  font-size: 8pt; letter-spacing: 0.34em; text-transform: uppercase;
+  color: var(--gold); margin-bottom: 2mm;
+}
+h3 {
+  font-family: var(--display);
+  font-weight: 600; font-size: 15.5pt; color: var(--ink);
+  margin: 5mm 0 1.5mm; text-align: left;
+}
+h3 .num { color: var(--gold); margin-right: 0.4em; }
+
+/* ---------- DIVISOR GEOMÉTRICO DE SEÇÃO ---------- */
+.geo-divider { display: block; width: 120px; height: auto; margin: 7mm auto 6mm; opacity: 0.9; }
+
+/* ---------- DEMONSTRAÇÃO (denso, voz do raciocínio) ---------- */
+.demo {
+  margin: 3mm 0 4mm; padding: 0 0 0 5mm;
+  border-left: 1px solid var(--rule);
+}
+.demo .tag {
+  font-family: var(--label); font-size: 7pt; letter-spacing: 0.2em;
+  text-transform: uppercase; color: var(--gold);
+  display: inline; margin-right: 0.6em;
+}
+.demo p { font-size: 10.4pt; line-height: 1.46; color: #34322c; text-indent: 0; }
+.qed { color: var(--gold); font-weight: 600; font-style: normal; }
+
+/* nota à margem (precisão acadêmica leve) */
+.refnote { color: var(--muted); font-style: italic; }
+
+/* ---------- PROPOSIÇÃO EM DESTAQUE (com selo) ---------- */
+.prop {
+  break-inside: avoid;
+  margin: 4.5mm 0;
+  padding: 4mm 6mm 4mm 7mm;
+  background: #fffdf7;
+  border-left: 3px solid var(--gold);
+  box-shadow: 0 1px 0 var(--rule);
+  position: relative;
+}
+.prop .seal {
+  font-family: var(--label);
+  font-size: 7pt; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--gold); display: block; margin-bottom: 2.5mm;
+}
+.prop .text {
+  font-family: var(--display);
+  font-size: 14.5pt; line-height: 1.34; font-weight: 500;
+  color: var(--ink); text-align: left; text-indent: 0;
+}
+.prop.climax {
+  background: var(--ink); border-left-color: var(--gold);
+}
+.prop.climax .text { color: var(--paper); }
+.prop.climax .seal { color: var(--gold-soft); }
+
+/* ---------- BOX DIDÁTICO "Em outras palavras" ---------- */
+.gloss {
+  break-inside: avoid;
+  margin: 5mm 0; padding: 4.5mm 5mm;
+  background: rgba(169,133,63,0.07);
+  border: 1px solid var(--rule);
+  border-radius: 2px;
+}
+.gloss .tag {
+  font-family: var(--label); font-size: 7.5pt;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold); display: block; margin-bottom: 1.5mm;
+}
+.gloss p { text-indent: 0; text-align: left; font-size: 10.5pt; }
+
+/* ---------- DIAGRAMAS / FIGURAS ---------- */
+figure { break-inside: avoid; margin: 5mm 0; text-align: center; }
+figure svg, figure img { max-width: 100%; height: auto; }
+figcaption {
+  font-family: var(--label); font-size: 8pt; color: var(--muted);
+  margin-top: 2.5mm; letter-spacing: 0.04em;
+}
+
+/* ---------- CITAÇÃO / EPÍGRAFE NO CORPO ---------- */
+blockquote {
+  margin: 6mm 4mm; padding-left: 5mm;
+  border-left: 2px solid var(--rule);
+  font-family: var(--display); font-style: italic;
+  font-size: 12.5pt; color: var(--muted); line-height: 1.45;
+}
+
+/* ---------- FOLHA DE ROSTO ---------- */
+.titlepage {
+  break-after: page;
+  height: 9in; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; text-align: center;
+  padding: 0 14mm;
+}
+.titlepage .mark { width: 64px; height: 64px; margin-bottom: 12mm; }
+.titlepage h1 {
+  font-family: var(--display); font-weight: 600;
+  font-size: 52pt; line-height: 0.98; color: var(--ink); margin: 0;
+  letter-spacing: 0.01em;
+}
+.titlepage .sub {
+  font-family: var(--display); font-style: italic;
+  font-size: 15pt; color: var(--muted); margin: 7mm auto 0; max-width: 80%;
+}
+.titlepage .author {
+  font-family: var(--label); font-size: 10pt; letter-spacing: 0.3em;
+  text-transform: uppercase; color: var(--text); margin-top: 16mm;
+}
+.titlepage .edition {
+  font-family: var(--label); font-size: 8pt; letter-spacing: 0.28em;
+  text-transform: uppercase; color: var(--gold); margin-top: 3mm;
+}
+
+/* utilidades */
+.center { text-align: center; }
+.spacer { height: 6mm; }
