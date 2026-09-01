@@ -78,6 +78,25 @@ def run_gates() -> None:
 
     failed = []
 
+    # A missing gate script used to return 127, which every branch below treated
+    # as "nothing to report" — so a checkout without the scripts printed three
+    # MISSING lines and then VALIDATION BARRIER PASSED. A barrier that announces
+    # approval for checks it never ran is worse than no barrier, because it is
+    # believed. Refuse up front instead, and name the escape hatch rather than
+    # taking it silently.
+    absent = [s for s in (SEALS_POC, CONSISTENCY, FIDELITY if do_fidelity else None) if s and not s.exists()]
+    if absent and os.environ.get("SPINOZA_GATES_ALLOW_MISSING") != "1":
+        print("BUILD ABORTED — gate scripts not found, so nothing was validated:")
+        for script in absent:
+            print(f"  missing: {script}")
+        print("\nThese live outside this repository. Point HARDENING at them, or set")
+        print("SPINOZA_GATES_ALLOW_MISSING=1 to build knowing the text is unchecked.")
+        print("=" * 72)
+        raise SystemExit(1)
+    if absent:
+        print("!! SPINOZA_GATES_ALLOW_MISSING=1 — "
+              f"{len(absent)} gate(s) absent. Build is UNVERIFIED.")
+
     # ---- Gate 1: coordinate existence (advisory; informational PoC) ----
     print("\n[gate 1/3] seal-coordinate existence (validate_seals_poc.py)")
     rc1 = _run(SEALS_POC)
@@ -128,7 +147,11 @@ def run_gates() -> None:
         print("only if you understand exactly what you are skipping).")
         print("=" * 72)
         raise SystemExit(1)
-    print("VALIDATION BARRIER PASSED — proceeding to build.")
+    if absent:
+        print(f"VALIDATION BARRIER INCOMPLETE — {len(absent)} gate(s) never ran. "
+              "Proceeding to build.")
+    else:
+        print("VALIDATION BARRIER PASSED — proceeding to build.")
     print("=" * 72 + "\n")
 
 
