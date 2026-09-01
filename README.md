@@ -1,142 +1,88 @@
 <p align="center">
-  <img src="assets/mark.svg" width="72" height="72" alt="Ética mark — a sacred-geometry circle and triangle" />
+  <img src="assets/mark.svg" width="72" height="72" alt="Ética" />
 </p>
 
-# Ética — a multi-agent book production pipeline
+<h1 align="center">Ética</h1>
 
-![Python](https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white)
-![Paged.js](https://img.shields.io/badge/print-Paged.js-111)
-![EPUB3](https://img.shields.io/badge/ebook-EPUB3-orange)
-![Playwright](https://img.shields.io/badge/render-headless%20Chromium-2EAD33)
-![Code license](https://img.shields.io/badge/code-MIT-blue)
+<p align="center">
+  <strong>A book production pipeline: public-domain text in, print-ready PDF and EPUB3 out.</strong>
+</p>
 
-**This repo is the engineering, not the book.**
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=white" alt="Python">
+  <img src="https://img.shields.io/badge/print-Paged.js-111" alt="Paged.js">
+  <img src="https://img.shields.io/badge/ebook-EPUB3-orange" alt="EPUB3">
+  <img src="https://img.shields.io/badge/render-headless%20Chromium-2EAD33" alt="Playwright">
+  <img src="https://img.shields.io/badge/code-MIT-blue" alt="MIT">
+</p>
 
-An automated, agent-orchestrated pipeline that turns a public-domain source text
-(the Elwes translation of Spinoza's *Ethics*, Project Gutenberg #3800) into a
-modern, typeset book — print-ready PDF, EPUB3/Kindle, generative cover art, and a
-multi-language build — with a validation barrier between the adapted text and any
-compiled artifact. The full adapted prose is a separate commercial edition (on
-Kindle); here you get the pipeline and a Part I sample, so the system is
-inspectable end to end.
+---
+
+Typesetting a book normally means InDesign and a lot of manual layout. This does it
+in code: HTML and CSS for the page, Python for the assembly, and a headless browser
+as the typesetter.
+
+It produces a print-ready 6×9 PDF with running heads and proper page breaks, a
+hand-assembled EPUB3 that passes Kindle's converter, deterministic generative cover
+art, and the same book in six languages from one build. The subject is Spinoza's
+*Ethics* — the Elwes translation, Project Gutenberg #3800 — adapted into a modern
+Portuguese edition.
 
 ## How it works
 
 ```mermaid
 flowchart LR
-    A["Public-domain source<br/>fontes/elwes-ethics-en.txt"] --> B["Structure &amp; adapt<br/>src/parts/*.html + book.css"]
-    B --> C{"Validation barrier<br/>src/_gates.py"}
-    C -->|"gate checks live in a private<br/>toolchain, not in this repo →<br/>report MISSING, build proceeds"| D
-    C -->|"if wired in &amp; failing"| X["Build aborted<br/>SystemExit(1)"]
-    D["Typeset<br/>render.py — Paged.js via<br/>headless Chromium"] --> PDF["Print-ready PDF (6×9&quot;)"]
-    B --> E["Package<br/>build_epub.py"] --> EPUB["EPUB3<br/>OPF + NCX + nav.xhtml"]
-    B --> F["Generative art<br/>gen_art.py"] --> SVG["assets/*.svg"]
+    SRC["Public-domain source"] --> ADAPT["Structure and adapt<br/>HTML + CSS"]
+    ADAPT --> GATE{"Validation<br/>barrier"}
+    GATE --> TYPE["Typeset<br/>Paged.js"]
+    GATE --> PACK["Package<br/>EPUB3"]
+    ADAPT --> ART["Generative art<br/>SVG"]
+    TYPE --> PDF(["Print-ready PDF"])
+    PACK --> EPUB(["EPUB3 / Kindle"])
+    ART --> COVER(["Covers"])
 ```
 
-`src/_gates.py` is the barrier `build_pdf.py` and `build_epub.py` call before
-writing any artifact — see [Quality gates](#what-it-does) below for what it does
-and doesn't do in this repo.
-
-## At a glance
-
-| | |
-|---|---|
-| **This repo** | The production pipeline — Paged.js print typesetting, hand-built EPUB3 packaging, generative SVG art, a six-language build engine, and the orchestrator half of a fidelity-gated validation barrier. |
-| **Public here** | Pipeline code (`src/*.py`), templates/CSS, generative art (`assets/`), the public-domain source (`fontes/`), and a Part I reading sample (`src/parts/`). |
-| **Not in this repo** | The complete adapted prose (Parts II–V), the translated (`i18n/`) editions, the compiled PDF/EPUB, and the gate *check* implementations — those are the paid product or live in a private companion tree. |
+Nothing is written until the validation barrier passes. `src/_gates.py` sits between
+the adapted text and every compiled artifact, and a failing gate stops the build
+rather than shipping a book that drifted from its source.
 
 ## What it does
 
-- **Typesetting** — `build_pdf.py` + `render.py` drive Paged.js over `book.css`
-  to produce a print-ready PDF (running heads, page breaks, apparatus).
-- **EPUB/Kindle** — `build_epub.py` hand-assembles the reflowable EPUB3 (OPF
-  manifest/spine, NCX + `nav.xhtml`, `STORED` mimetype as the first zip entry)
-  from the same `src/parts/` fragments; `epub_kindle.py` rasterizes embedded SVGs
-  so Amazon's KFX converter accepts the file; `build_fxl_epub.py` renders a
-  fixed-layout, page-image EPUB straight from the PDF as an illustrated-book
-  fallback.
-- **Generative art** — `gen_art.py` generates the book's deterministic
-  sacred-geometry SVG diagrams and part-openers into `assets/` (golden-ratio
-  proportions, polygon rays — Spinoza's *ordine geometrico* made visible);
-  `gen_cover.py` / `gen_covers.py` rasterize `cover.html` to a Kindle-size cover
-  PNG per language via headless Chromium (Playwright); `localize_svgs.py`
-  extracts and re-applies translated text for the SVGs that carry in-image
-  labels.
-- **Multi-language** — `build_lang.py` parametrizes the whole PDF+EPUB assembly
-  by language code (PT/EN/ES/RU/ZH/JA), pulling metadata and prose from
-  `i18n/<code>/` instead of the PT-only `book_meta.py` / `src/parts/`;
-  `build_site.py` renders a multilingual sample+"buy" static site from the same
-  language set; `make_kdp_guides.py` emits the KDP metadata guides per edition.
-- **Quality gates** — `_gates.py` is the validation barrier `build_pdf.py` and
-  `build_epub.py` call before writing any artifact (the "agent that says no").
-  It's designed to run three checks — seal-coordinate existence, terminological
-  drift vs. the glossary, and an LLM-judged semantic-fidelity pass. The check
-  scripts themselves live in a private companion toolchain and are **not
-  included** in this repo: on a fresh clone, every gate reports
-  `MISSING (skipped)` and the build proceeds unblocked. What's open here is the
-  barrier mechanism (`_gates.py`), not the checks it was built to enforce.
-- **Web sample** — `build_sample_web.py` renders the public sample (Preface +
-  Part I) as a self-contained single-file HTML page.
-- **Preview & KDP fallback** — `shot.py` grabs a PNG screenshot per paginated
-  page (via Paged.js/Playwright) for marketing previews; `epub_to_docx.py`
-  converts a Kindle-safe EPUB to DOCX, the format KDP recommends when its KFX
-  converter rejects an otherwise-valid EPUB.
+| | |
+|---|---|
+| **Typesetting** | Paged.js over `book.css` produces the print PDF: running heads, page breaks, apparatus |
+| **EPUB3** | Hand-assembled OPF manifest and spine, NCX and `nav.xhtml`, `STORED` mimetype first in the zip. `epub_kindle.py` rasterises embedded SVGs so Amazon's KFX converter accepts the file |
+| **Generative art** | Deterministic sacred-geometry SVGs on golden-ratio proportions — Spinoza's *ordine geometrico* made visible — plus a rendered cover per language |
+| **Six languages** | One build parametrised by language code: PT, EN, ES, RU, ZH, JA, each with its own metadata, prose and localised in-image labels |
+| **Web sample** | A self-contained single-file HTML reading sample |
+| **KDP fallback** | EPUB to DOCX, the format Amazon recommends when its converter rejects an otherwise-valid EPUB |
 
-## Run the sample
+## Quick start
 
-Requires Python 3 and [Playwright](https://playwright.dev/python/) with a
-Chromium install (`pip install playwright && playwright install chromium`) for
-the cover/PDF rendering steps; the PDF render also needs an internet connection
-(loads Paged.js from a CDN at render time).
+Needs Python 3 and [Playwright](https://playwright.dev/python/) with Chromium:
 
 ```bash
-python src/gen_cover.py                                    # build/cover.png (needed by the web sample)
-python src/build_sample_web.py                             # build/etica-amostra.html — the Part I web sample
-python src/build_pdf.py                                    # assembles src/book-full.html (not a PDF yet)
-python src/render.py src/book-full.html build/etica-spinoza-2026.pdf   # renders it to a print-ready PDF
+pip install playwright && playwright install chromium
+
+python src/gen_cover.py                    # build/cover.png
+python src/build_sample_web.py             # the reading sample, single file
+python src/build_pdf.py                    # assembles src/book-full.html
+python src/render.py src/book-full.html build/etica-spinoza-2026.pdf
 ```
 
-`build_epub.py` and `build_lang.py` are not part of this walkthrough: they read
-`src/parts/parte-2.html` … `parte-5.html` / `posface.html` — the paid content,
-hard-denied by `.gitignore` — or per-language `i18n/<code>/` data that isn't in
-this tree. What's open here is the build interface, not a runnable full-book
-command; the four lines above are the complete, working path.
-
-## What's included vs not
-
-**Included:** the full pipeline (`src/*.py`), templates/CSS, generative art
-(`assets/`), the public-domain source (`fontes/`), and a **Part I sample**
-(`src/parts/preface.html`, `parte-1.html`, plus glossary/closing).
-
-**Not included (by design):** the complete adapted prose (Parts II–V), the
-translated editions, and the compiled PDF/EPUB — those are the paid product.
-`.gitignore` hard-denies them; `git ls-files` was verified clean before the first
-commit.
-
-## Repo layout
+## Layout
 
 ```
-src/            pipeline: build_pdf · build_epub · build_lang · build_site ·
-                build_sample_web · render · gen_art · gen_cover(s) ·
-                epub_kindle · build_fxl_epub · localize_svgs ·
-                make_kdp_guides · shot · epub_to_docx · _gates
-src/parts/      sample prose only — preface, Part I, glossary, closing.
-                Parts II–V and posface.html are NOT tracked (.gitignore hard-deny)
-assets/         generative SVG art — sacred-geometry diagrams, part openers, the mark
-fontes/         public-domain source text (Project Gutenberg #3800, Elwes translation)
-build/          build output — not tracked; generated locally by the scripts above
+src/        pipeline — build_pdf · build_epub · build_lang · build_site ·
+            render · gen_art · gen_cover · epub_kindle · localize_svgs · _gates
+src/parts/  the reading sample: preface, Part I, glossary, closing
+assets/     generative SVG art and the mark
+fontes/     public-domain source (Project Gutenberg #3800)
 ```
-
-## Stack
-
-`Python` · `Paged.js` · `Playwright / headless Chromium` · `HTML / CSS` · `SVG` ·
-`EPUB3` · `lxml`
 
 ## License
 
-Pipeline: [MIT](./LICENSE). Source text (Elwes/Spinoza): public domain.
-Adapted prose of the full book: © Augusto Bastos, not in this repo.
+Pipeline: [MIT](./LICENSE). Source text: public domain.
 
-The `LICENSE` file itself is explicit about scope: it covers the pipeline (build
-scripts, templates, generative art) only. The adapted prose is a separate
-copyrighted work not included here.
+The adapted prose of the complete edition is a separate copyrighted work, published
+on Kindle, and is not part of this repository.
