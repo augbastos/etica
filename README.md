@@ -75,7 +75,7 @@ python src/render.py src/book-full.html build/etica-spinoza-2026.pdf
 ```
 src/        pipeline — build_pdf · build_epub · build_lang · build_site ·
             render · gen_art · gen_cover · epub_kindle · localize_svgs · _gates
-src/parts/  the reading sample: preface, Part I, glossary, closing
+src/parts/  a short excerpt of Part I (two propositions); preface and glossary are placeholders
 assets/     generative SVG art and the mark
 fontes/     public-domain source (Project Gutenberg #3800)
 ```
@@ -85,4 +85,6 @@ fontes/     public-domain source (Project Gutenberg #3800)
 Pipeline: [MIT](./LICENSE). Source text: public domain.
 
 The adapted prose of the complete edition is a separate copyrighted work, published
-on Kindle, and is not part of this repository.
+on Kindle, and is not part of this repository. Only a short excerpt is included, so the
+full EPUB build (`build_epub.py`, which expects all five parts) does not run from this
+repository alone.
